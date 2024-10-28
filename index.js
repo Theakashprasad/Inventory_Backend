@@ -10,7 +10,7 @@ dotenv.config();
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // Allow requests from your Vite dev server
+    origin: ["http://localhost:5173","https://inventory-frontend-kappa-liart.vercel.app"], // Allow requests from your Vite dev server
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true, // If you're sending cookies or authorization headers
   })
