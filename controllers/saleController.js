@@ -16,6 +16,7 @@ const postSale = async (req, res) => {
       itemName,
       customerName,
       quantity,
+      itemPrice: item.price,
       owner: email,
       cash,
     });
@@ -34,9 +35,9 @@ const postSale = async (req, res) => {
 };
 
 const getSale = async (req, res) => {
-      const email = req.params.email
+      const id = req.params.id
   try {
-    const sales = await Sale.find({ owner: email });
+    const sales = await Sale.find({ owner: id });
     if (!sales) {
       return res.status(404).json({ message: "No sales found" });
     }

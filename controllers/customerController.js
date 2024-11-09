@@ -2,10 +2,10 @@ import Customer from "../model/customerModel.js";
 
 const postCustomer = async (req, res) => {
   try {
-    const { customerName, email, phone, address, userEmail } = req.body;
+    const { customerName, email, phone, address, creatorId } = req.body;
     console.log(email);
     
-    const itemDetails = await Customer.findOne({ email: email }).exec();
+    const itemDetails = await Customer.findOne({creator: creatorId, email: email }).exec();
     if (itemDetails) {
       return res.status(404).json({ message: "USER EXITS" });
     }
@@ -14,7 +14,7 @@ const postCustomer = async (req, res) => {
       address: address,
       email: email,
       phone: phone,
-      creator: userEmail,
+      creator: creatorId,
     });
     await data.save();
     return res.status(200).json(data);
@@ -26,8 +26,8 @@ const postCustomer = async (req, res) => {
 
 const getCustomer = async (req, res) => {
   try {
-    const email = req.params.email;
-    const itemDetails = await Customer.find({ creator: email }).exec();
+    const id = req.params.id;
+    const itemDetails = await Customer.find({ creator: id }).exec();
 
     if (!itemDetails) {
       return res.status(404).json({ message: "No items found" });
@@ -41,9 +41,9 @@ const getCustomer = async (req, res) => {
 
 const patchCustomer = async (req, res) => {
     try {
-        const { customerName, email, phone, address, userEmail, getId } = req.body;
+        const { customerName, email, phone, address, creatorId, getId } = req.body;
         const updatedItem = await Customer.findOneAndUpdate(
-            { creator: userEmail, _id: getId }, // Ensure you're matching the correct item
+            { creator: creatorId, _id: getId }, // Ensure you're matching the correct item
             {
                 name:customerName,
                 email,
@@ -64,4 +64,28 @@ const patchCustomer = async (req, res) => {
   }
 };
 
-export default { postCustomer, getCustomer, patchCustomer };
+
+const deleteCustomer = async (req, res)=> {
+ 
+  try {
+    
+    const { id } = req.params;
+
+    const item = await Customer.findOne({ _id: id });
+
+    if (!item) {
+      return res.status(404).json({ message: 'Item not found or you do not have permission to delete this item' });
+    }
+
+    await item.deleteOne();
+
+    return res.status(200).json({
+      message: "ITEM DELETED SUCESSFULLY",
+    });
+
+  } catch (err) {
+    return res.status(500).json({ message: 'An error occurred', error: err.message });    
+  }
+};
+
+export default { postCustomer, getCustomer, patchCustomer, deleteCustomer };

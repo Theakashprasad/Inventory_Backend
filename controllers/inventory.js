@@ -2,8 +2,8 @@ import Inventory from "../model/inventoryModel.js";
 
 const postInventory = async (req, res) => {
   try {
-    const { itemName, description, quantity, price, email } = req.body;
-    const itemDetails = await Inventory.findOne({ name: itemName }).exec();
+    const { itemName, description, quantity, price, creatorId } = req.body;
+    const itemDetails = await Inventory.findOne({creator:creatorId, name: itemName }).exec();
     console.log('asdf',itemDetails);
     
     if (itemDetails) {
@@ -14,7 +14,7 @@ const postInventory = async (req, res) => {
       description,
       quantity,
       price,
-      creator: email,
+      creator: creatorId,
     });
     await data.save();
     return res.status(200).json(data);
@@ -26,8 +26,8 @@ const postInventory = async (req, res) => {
 
 const getInventory = async (req, res) => {
   try {
-    const email = req.params.email;
-    const itemDetails = await Inventory.find({ creator: email }).exec();
+    const id = req.params.id;
+    const itemDetails = await Inventory.find({ creator: id }).exec();
     if (!itemDetails) {
       return res.status(404).json({ message: "No items found" });
     }
@@ -40,9 +40,9 @@ const getInventory = async (req, res) => {
 
 const patchInventory = async (req, res) => {
   try {
-    const { itemName, description, quantity, price, email, getId } = req.body;    
+    const { itemName, description, quantity, price, creatorId, getId } = req.body;    
     const updatedItem = await Inventory.findOneAndUpdate(
-      { creator: email, _id: getId}, 
+      { creator: creatorId, _id: getId}, 
       { 
         name:itemName,
         description,
@@ -79,7 +79,7 @@ const patchInventory = async (req, res) => {
     await item.deleteOne();
 
     return res.status(200).json({
-      message: "Item deleted successfully",
+      message: "ITEM DELETED SUCESSFULLY",
     });
 
   } catch (err) {

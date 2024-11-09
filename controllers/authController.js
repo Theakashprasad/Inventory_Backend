@@ -1,6 +1,8 @@
 import bcrypt from "bcryptjs";
 import User from "../model/userModel.js";
 import generateTokenAndSetCookie from "../utils/generateToken.js";
+import jwt from "jsonwebtoken";
+
 const signUp = async (req, res) => {
   const { fullname, email, password } = req.body.data;
   try {
@@ -54,18 +56,25 @@ const signUp = async (req, res) => {
 		}
 
 		generateTokenAndSetCookie(user._id, res);
+    const token = jwt.sign( {userId: user._id} , process.env.JWT_SECRET, {
+      expiresIn: "15d",
+    });
+console.log('sdf',token);
 
-		res.status(200).json({success: true,
+		res.status(200).json({success: true, 
 			_id: user._id,
 			fullname: user.fullname,
 			email: user.email,
 			profilePic: user.profilePic,
+      token
 		});
+
 	} catch (error) { 
 		console.log("Error in login controller", error.message);
 		res.status(500).json({ error: "Internal Server Error" });
 	}
 };
+
  const postInventory = async (req, res) => {
 	try {
    console.log(req.body);
