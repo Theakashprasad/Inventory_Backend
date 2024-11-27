@@ -42,6 +42,12 @@ const getCustomer = async (req, res) => {
 const patchCustomer = async (req, res) => {
     try {
         const { customerName, email, phone, address, creatorId, getId } = req.body;
+
+        const existingItem = await Customer.findOne({ email: email, creator: creatorId });
+        if (existingItem && existingItem._id.toString() !== getId) {
+          return res.status(400).json({ error: "Item name already exists" });
+        }
+
         const updatedItem = await Customer.findOneAndUpdate(
             { creator: creatorId, _id: getId }, // Ensure you're matching the correct item
             {

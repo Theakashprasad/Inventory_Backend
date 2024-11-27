@@ -41,6 +41,12 @@ const getInventory = async (req, res) => {
 const patchInventory = async (req, res) => {
   try {
     const { itemName, description, quantity, price, creatorId, getId } = req.body;    
+
+    const existingItem = await Inventory.findOne({ name: itemName, creator: creatorId });
+    if (existingItem && existingItem._id.toString() !== getId) {
+      return res.status(400).json({ error: "Item name already exists" });
+    }
+
     const updatedItem = await Inventory.findOneAndUpdate(
       { creator: creatorId, _id: getId}, 
       { 
